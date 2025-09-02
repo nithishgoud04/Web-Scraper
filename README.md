@@ -1,23 +1,20 @@
-# Web-Scraper
-Let’s scrape the titles of articles from a simple blog or news site. For this example, we’ll use https://quotes.toscrape.com , a site designed for scraping practice.
-🔹 Step 1: requests.get(url)
-      🔹This fetches the content of the webpage using the HTTP GET method.
-      🔹Returns a response object containing all the HTML.
+import requests
+from bs4 import BeautifulSoup
 
-🔹 Step 2: Status Code Check
-      🔹response.status_code checks if the request was successful (200).
-      🔹If not, we exit early.
+url = 'https://quotes.toscrape.com'
+response = requests.get(url)
 
-🔹 Step 3: Parsing HTML
-      🔹BeautifulSoup(response.text, 'html.parser') parses the HTML content.
-      🔹Now we can navigate and search through the HTML as a Python object.
+if response.status_code == 200:
+    print("Successfully fetched the webpage!")
+else:
+    print("Failed to retrieve the webpage:", response.status_code)
+    exit()
 
-🔹 Step 4: Find HTML Elements
-      🔹soup.find_all('div', class_='quote') returns a list of all divs with class quote.
-      🔹These are the containers for each quote on the page.
+soup = BeautifulSoup(response.text, 'html.parser')
 
-🔹 Step 5: Extract Text
-  🔹For each quote:
-       .find('span', class_='text') gets the quote content.
-       .find('small', class_='author') gets the author name.
-       .get_text() extracts the text part only (removes tags).
+quotes = soup.find_all('div', class_='quote')
+
+for idx, quote in enumerate(quotes, start=1):
+    quote_text = quote.find('span', class_='text').get_text()
+    author = quote.find('small', class_='author').get_text()
+    print(f"{idx}. \"{quote_text}\" - {author}")
